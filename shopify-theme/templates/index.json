@@ -1,0 +1,21 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-elmasry-home",
+      "settings": {
+        "hero_heading": "القطعة الصح، من أول مرة.",
+        "hero_body": "قطع غيار هيونداي وكيا الأصلية مع تأكيد المطابقة برقم الشاسيه، من قلب الحرفيين إلى باب بيتك.",
+        "products_limit": 4,
+        "whatsapp_number": "201142900066"
+      },
+      "blocks": {
+        "tucson": { "type": "vehicle", "settings": { "brand": "هيونداي", "model": "توسان", "generation": "NX4 / TL", "count_label": "قطع متاحة" } },
+        "sportage": { "type": "vehicle", "settings": { "brand": "كيا", "model": "سبورتاج", "generation": "NQ5 / QL", "count_label": "قطع متاحة" } },
+        "elantra": { "type": "vehicle", "settings": { "brand": "هيونداي", "model": "إيلانترا", "generation": "HD / AD / CN7", "count_label": "قطع متاحة" } },
+        "cerato": { "type": "vehicle", "settings": { "brand": "كيا", "model": "سيراتو", "generation": "K3 / Grand Cerato", "count_label": "قطع متاحة" } }
+      },
+      "block_order": ["tucson", "sportage", "elantra", "cerato"]
+    }
+  },
+  "order": ["main"]
+}

@@ -1,0 +1,13 @@
+<section class="em-container em-section" dir="rtl">
+  <span class="em-section-label">نتائج البحث</span>
+  <h1>نتائج البحث عن: {{ search.terms | escape }}</h1>
+  <div class="em-product-grid">
+    {% for item in search.results %}
+      {% if item.object_type == 'product' %}
+        <article class="em-product-card"><a class="em-product-image" href="{{ item.url }}">{% if item.featured_image %}{{ item.featured_image | image_url: width: 760 | image_tag: loading: 'lazy', alt: item.title }}{% endif %}</a><div class="em-product-body"><h2><a href="{{ item.url }}">{{ item.title }}</a></h2><div class="em-product-bottom"><strong>{{ item.price | money }}</strong><a class="em-wa-link" href="https://wa.me/201142900066?text={{ 'مرحباً، أريد الاستفسار عن ' | append: item.title | url_encode }}" target="_blank" rel="noopener">واتساب</a></div></div></article>
+      {% endif %}
+    {% else %}
+      <p class="em-empty">لم نجد قطعة بهذه المواصفات. تواصل معنا على واتساب للمساعدة.</p>
+    {% endfor %}
+  </div>
+</section>

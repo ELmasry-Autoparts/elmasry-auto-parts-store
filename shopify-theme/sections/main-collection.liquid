@@ -1,0 +1,14 @@
+<section class="em-container em-section" dir="rtl">
+  <span class="em-section-label">كتالوج القطع</span>
+  <h1>{{ collection.title }}</h1>
+  <div class="em-product-grid">
+    {% for product in collection.products %}
+      <article class="em-product-card">
+        <a class="em-product-image" href="{{ product.url }}">{% if product.featured_image %}{{ product.featured_image | image_url: width: 760 | image_tag: loading: 'lazy', alt: product.title }}{% endif %}</a>
+        <div class="em-product-body"><h2><a href="{{ product.url }}">{{ product.title }}</a></h2><div class="em-product-bottom"><strong>{{ product.price | money }}</strong><a class="em-wa-link" href="https://wa.me/201142900066?text={{ 'مرحباً، أريد طلب ' | append: product.title | url_encode }}" target="_blank" rel="noopener">واتساب</a></div></div>
+      </article>
+    {% else %}
+      <p class="em-empty">لا توجد منتجات في هذه المجموعة حاليًا.</p>
+    {% endfor %}
+  </div>
+</section>

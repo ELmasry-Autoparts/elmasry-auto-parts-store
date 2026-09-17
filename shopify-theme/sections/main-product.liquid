@@ -1,0 +1,17 @@
+<section class="em-container em-section em-simple-page" dir="rtl">
+  <a class="em-text-link" href="{{ routes.root_url }}">← العودة للرئيسية</a>
+  <div class="em-product-detail">
+    <div>{% if product.featured_image %}{{ product.featured_image | image_url: width: 900 | image_tag: loading: 'eager', alt: product.title }}{% endif %}</div>
+    <div>
+      <span class="em-section-label">قطعة غيار أصلية</span>
+      <h1>{{ product.title }}</h1>
+      <p>{{ product.description }}</p>
+      <strong class="em-detail-price">{{ product.price | money }}</strong>
+      {% form 'product', product %}
+        <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+        <button class="em-button em-button-primary" type="submit">أضف للسلة</button>
+      {% endform %}
+      <a class="em-button em-button-ghost" href="https://wa.me/201142900066?text={{ 'مرحباً، أريد التأكد من قطعة: ' | append: product.title | url_encode }}" target="_blank" rel="noopener">تأكد عبر واتساب</a>
+    </div>
+  </div>
+</section>

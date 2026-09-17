@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link rel="canonical" href="{{ canonical_url }}">
+    <title>{% if page_title %}{{ page_title }}{% else %}{{ shop.name }}{% endif %}</title>
+    {% if page_description %}<meta name="description" content="{{ page_description | escape }}">{% endif %}
+    {{ 'elmasry-custom.css' | asset_url | stylesheet_tag }}
+    {{ content_for_header }}
+  </head>
+  <body>
+    <div class="em-site-header">
+      <div class="em-container em-header-inner">
+        <a class="em-brand" href="{{ routes.root_url }}">عبدالرحمن المصري <small>KOREAN OEM PARTS</small></a>
+        <nav aria-label="القائمة الرئيسية">
+          <a href="{{ routes.root_url }}#em-vehicles">السيارات</a>
+          <a href="{{ routes.root_url }}#em-parts">قطع الغيار</a>
+          <a href="{{ routes.root_url }}#em-matcher">المساعد الذكي</a>
+          <a href="{{ routes.search_url }}">بحث</a>
+        </nav>
+        <a class="em-header-wa" href="https://wa.me/201142900066?text={{ 'مرحباً، أريد الاستفسار عن قطعة غيار أصلية' | url_encode }}" target="_blank" rel="noopener">واتساب</a>
+      </div>
+    </div>
+
+    <main id="MainContent" role="main">
+      {{ content_for_layout }}
+    </main>
+
+    <footer class="em-site-footer">
+      <div class="em-container em-footer-inner">
+        <div><strong>عبدالرحمن المصري</strong><p>قطع غيار هيونداي وكيا الأصلية من الحرفيين إلى كل محافظات مصر.</p></div>
+        <div><a href="tel:01142900066">01142900066</a><a href="https://wa.me/201142900066" target="_blank" rel="noopener">واتساب مباشر</a></div>
+      </div>
+      <div class="em-container em-footer-bottom">© {{ 'now' | date: '%Y' }} {{ shop.name }}. جميع الحقوق محفوظة.</div>
+    </footer>
+
+    <script src="{{ 'elmasry-custom.js' | asset_url }}" defer="defer"></script>
+  </body>
+</html>
