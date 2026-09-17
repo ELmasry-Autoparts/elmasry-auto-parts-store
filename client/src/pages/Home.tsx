@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { trpc } from "@/lib/trpc";
 import {
   ArrowLeft,
   ArrowUpLeft,
@@ -157,10 +158,28 @@ export default function Home() {
   const [matcherResult, setMatcherResult] = useState<Product | null>(null);
   const [matcherMode, setMatcherMode] = useState<"text" | "code" | "image">("text");
   const [menuOpen, setMenuOpen] = useState(false);
+  const catalogQuery = trpc.catalog.list.useQuery({
+    query: query || undefined,
+    model: activeModel === "الكل" ? undefined : activeModel,
+    category: activeCategory === "الكل" ? undefined : activeCategory,
+    limit: 24,
+  });
+  const saveLead = trpc.leads.create.useMutation();
 
   const visibleProducts = useMemo(() => {
     const normalized = query.trim().toLowerCase();
-    return products.filter((product) => {
+    const persistedProducts: Product[] = (catalogQuery.data ?? []).map((product) => ({
+      id: product.id,
+      title: product.title,
+      oem: product.oemNumber,
+      model: product.model,
+      category: product.category,
+      price: `${product.price.toLocaleString("ar-EG")} ج.م`,
+      stock: product.stockLabel,
+      image: product.imageUrl || "/manus-storage/tucson_0380ba3b.jpg",
+      source: product.supplier || "مصدر المنتج",
+    }));
+    return (persistedProducts.length ? persistedProducts : products).filter((product) => {
       const matchesQuery = !normalized || [product.title, product.oem, product.model, product.category].join(" ").toLowerCase().includes(normalized);
       const matchesModel = activeModel === "الكل" || product.model === activeModel;
       const matchesCategory = activeCategory === "الكل" || product.category === activeCategory;
@@ -182,6 +201,7 @@ export default function Home() {
     } else {
       setMatcherResult(products[0]);
     }
+    saveLead.mutate({ query: matcherText, mode: matcherMode, productId: found?.id, source: "storefront-matcher" });
     scrollToId("parts");
   };
 
