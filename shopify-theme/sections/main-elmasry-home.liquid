@@ -1,0 +1,100 @@
+{{ 'elmasry-custom.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'elmasry-custom.js' | asset_url }}" defer="defer"></script>
+
+<section class="em-home" dir="rtl" data-em-home>
+  <div class="em-hero">
+    <div class="em-container em-hero-grid">
+      <div class="em-hero-copy">
+        <span class="em-eyebrow">قطع غيار كورية أصلية</span>
+        <h1>{{ section.settings.hero_heading | escape }}</h1>
+        <p>{{ section.settings.hero_body | escape }}</p>
+        <div class="em-actions">
+          <a class="em-button em-button-primary" href="#em-parts">ابدأ البحث <span aria-hidden="true">←</span></a>
+          <a class="em-button em-button-ghost" href="https://wa.me/{{ section.settings.whatsapp_number }}?text={{ 'مرحباً، أريد مساعدة في اختيار قطعة غيار' | url_encode }}" target="_blank" rel="noopener">اسأل على واتساب</a>
+        </div>
+      </div>
+      <div class="em-search-card">
+        <span class="em-card-kicker">مساعد البحث السريع</span>
+        <h2>بتدور على قطعة؟<br><strong>اكتب رقمها أو وصفها.</strong></h2>
+        <p>ابحث برقم OEM أو استخدم وصفًا بسيطًا للوصول إلى القطعة الأقرب.</p>
+        {% render 'oem-search' %}
+        <small class="em-note">المطابقة النهائية تتم بعد استلام رقم الشاسيه</small>
+      </div>
+    </div>
+    <div class="em-container em-trust-row">
+      <span>أصلي 100% من غبور وموبيس</span>
+      <span>ضمان مطابقة الشاسيه</span>
+      <span>مخزون مجمع من 6 مخازن</span>
+      <span>شحن سريع لكل المحافظات</span>
+    </div>
+  </div>
+
+  <div class="em-container em-section" id="em-vehicles">
+    <div class="em-section-heading">
+      <div><span class="em-section-label">01 / اختار عربيتك</span><h2>قطعك تبدأ من <strong>موديلك.</strong></h2></div>
+      <p>حدد عربيتك وشوف القطع المتاحة لها حسب الجيل والسنة ونوع القطعة.</p>
+    </div>
+    <div class="em-vehicle-grid">
+      {% for block in section.blocks %}
+        {% if block.type == 'vehicle' %}
+          <a class="em-vehicle-card" href="{{ block.settings.collection.url | default: '/collections/all' }}" {{ block.shopify_attributes }}>
+            {% if block.settings.image != blank %}
+              {{ block.settings.image | image_url: width: 900 | image_tag: loading: 'lazy', widths: '360,540,720,900', alt: block.settings.model }}
+            {% endif %}
+            <span class="em-vehicle-overlay"></span>
+            <span class="em-vehicle-info"><small>{{ block.settings.brand }} · {{ block.settings.generation }}</small><strong>{{ block.settings.model }}</strong><em>{{ block.settings.count_label }} ←</em></span>
+          </a>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="em-emphasis-section" id="em-matcher">
+    <div class="em-container em-emphasis-grid">
+      <div><span class="em-section-label">02 / مساعد المصري الذكي</span><h2>مش لازم تبقى عارف<br><strong>اسم القطعة.</strong></h2><p>اكتب وصفك أو رقم الـ OEM. في الإنتاج، يستدعي هذا المكوّن تطبيقًا مخصصًا بواجهة آمنة؛ لا تضع مفتاح خدمة الذكاء الاصطناعي داخل Theme.</p></div>
+      <div class="em-ai-card" data-em-matcher><div class="em-ai-head"><strong>مساعد المصري الذكي</strong><span>متصل بكتالوج القطع</span></div><textarea data-em-query placeholder="مثال: عايز تيل فرامل قدامي لتوسان 2019 تربو"></textarea><button class="em-button em-button-primary" type="button" data-em-submit>حلّل الطلب</button><p class="em-ai-status" data-em-status role="status" aria-live="polite"></p></div>
+    </div>
+  </div>
+
+  <div class="em-container em-section" id="em-parts">
+    <div class="em-section-heading"><div><span class="em-section-label">03 / كتالوج القطع</span><h2>القطعة الأصلية، <strong>مضمونة.</strong></h2></div><a class="em-text-link" href="https://wa.me/{{ section.settings.whatsapp_number }}?text={{ 'مرحباً، أريد الاستفسار عن قطعة غير موجودة في الكتالوج' | url_encode }}" target="_blank" rel="noopener">مش لاقي قطعتك؟ اسألنا ←</a></div>
+    <div class="em-product-grid">
+      {% assign featured_collection = section.settings.collection %}
+      {% if featured_collection != blank %}
+        {% for product in featured_collection.products limit: section.settings.products_limit %}
+          {% assign oem = product.metafields.custom.oem_number.value | default: product.selected_or_first_available_variant.sku %}
+          <article class="em-product-card">
+            <a href="{{ product.url }}" class="em-product-image">{{ product.featured_image | image_url: width: 760 | image_tag: loading: 'lazy', widths: '360,540,760', alt: product.title }}</a>
+            <div class="em-product-body"><small>{{ product.metafields.custom.supplier.value | default: 'مصدر المنتج' }}</small><h3><a href="{{ product.url }}">{{ product.title }}</a></h3><div class="em-oem">OEM <strong>{{ oem }}</strong></div><div class="em-product-bottom"><strong>{{ product.price | money }}</strong><a class="em-wa-link" href="https://wa.me/{{ section.settings.whatsapp_number }}?text={{ 'مرحباً، أريد التأكد من قطعة: ' | append: product.title | append: ' — OEM: ' | append: oem | url_encode }}" target="_blank" rel="noopener" aria-label="اطلب عبر واتساب">واتساب</a></div></div>
+          </article>
+        {% endfor %}
+      {% else %}
+        <p class="em-empty">اختر مجموعة منتجات من إعدادات هذا القسم لعرض المنتجات.</p>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "El Masry OEM home",
+  "settings": [
+    { "type": "text", "id": "hero_heading", "label": "Hero heading", "default": "القطعة الصح، من أول مرة." },
+    { "type": "textarea", "id": "hero_body", "label": "Hero body", "default": "قطع غيار هيونداي وكيا الأصلية مع تأكيد المطابقة برقم الشاسيه، من قلب الحرفيين إلى باب بيتك." },
+    { "type": "collection", "id": "collection", "label": "Featured parts collection" },
+    { "type": "range", "id": "products_limit", "label": "Products to show", "min": 2, "max": 12, "step": 1, "default": 4 },
+    { "type": "text", "id": "whatsapp_number", "label": "WhatsApp number without +", "default": "201142900066" }
+  ],
+  "blocks": [
+    { "type": "vehicle", "name": "Vehicle card", "settings": [
+      { "type": "text", "id": "brand", "label": "Brand", "default": "هيونداي" },
+      { "type": "text", "id": "model", "label": "Model", "default": "توسان" },
+      { "type": "text", "id": "generation", "label": "Generation", "default": "NX4 / TL" },
+      { "type": "text", "id": "count_label", "label": "Count label", "default": "قطع متاحة" },
+      { "type": "image_picker", "id": "image", "label": "Vehicle image" },
+      { "type": "collection", "id": "collection", "label": "Vehicle collection" }
+    ] }
+  ],
+  "presets": [{ "name": "El Masry OEM home", "blocks": [{ "type": "vehicle" }, { "type": "vehicle" }, { "type": "vehicle" }, { "type": "vehicle" }] }]
+}
+{% endschema %}

@@ -1,0 +1,12 @@
+<form class="em-search-form" action="{{ routes.search_url }}" method="get" role="search" data-em-search-form>
+  <label class="visually-hidden" for="em-search-input">ابحث برقم القطعة أو وصفها</label>
+  <input id="em-search-input" type="search" name="q" value="{{ search.terms | escape }}" placeholder="مثال: 58101-D3A00 أو تيل فرامل توسان" autocomplete="off" data-em-search-input>
+  <input type="hidden" name="type" value="product">
+  <button type="submit" aria-label="تنفيذ البحث">بحث</button>
+</form>
+<div class="em-search-hints" aria-label="عمليات بحث مقترحة">
+  <span>الأكثر بحثاً</span>
+  <button type="button" data-em-fill="58101-D3A00">58101-D3A00</button>
+  <button type="button" data-em-fill="توسان">توسان</button>
+  <button type="button" data-em-fill="فلتر زيت">فلتر زيت</button>
+</div>
