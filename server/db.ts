@@ -8,6 +8,8 @@ import {
   leads,
   products,
   users,
+  wpcResearchRecords,
+  InsertWpcResearchRecord,
 } from "../drizzle/schema";
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -118,4 +120,26 @@ export async function listRecentLeads(limit = 50) {
   const db = await getDb();
   if (!db) return [];
   return db.select().from(leads).orderBy(desc(leads.createdAt)).limit(Math.min(limit, 100));
+}
+
+export async function createWpcResearchRecord(input: InsertWpcResearchRecord) {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot create WPC research record: database not available");
+    return { id: null, researchId: input.researchId };
+  }
+  const result = await db.insert(wpcResearchRecords).values(input);
+  return { id: result[0].insertId, researchId: input.researchId };
+}
+
+export async function listWpcResearchRecords(limit = 50) {
+  const db = await getDb();
+  if (!db) return [];
+  const rows = await db.select().from(wpcResearchRecords).orderBy(desc(wpcResearchRecords.retrievedAt)).limit(Math.min(limit, 100));
+  return rows.map((row) => ({
+    ...row,
+    result: JSON.parse(row.resultJson),
+    evidence: JSON.parse(row.evidenceJson),
+    notes: JSON.parse(row.notesJson),
+  }));
 }
