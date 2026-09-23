@@ -167,6 +167,18 @@ export default defineConfig({
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
+    chunkSizeWarningLimit: 450,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (!id.includes("node_modules")) return;
+          if (id.includes("/gsap/")) return "motion-vendor";
+          if (id.includes("react") || id.includes("react-dom")) return "react-vendor";
+          if (id.includes("lucide-react") || id.includes("@radix-ui")) return "ui-vendor";
+          if (id.includes("@trpc") || id.includes("@tanstack")) return "data-vendor";
+        },
+      },
+    },
   },
   server: {
     host: true,

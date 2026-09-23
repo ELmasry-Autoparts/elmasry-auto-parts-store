@@ -66,6 +66,29 @@ export const leads = mysqlTable("leads", {
   createdAtIdx: index("leads_created_at_idx").on(table.createdAt),
 }));
 
+export const wpcResearchRecords = mysqlTable("wpc_research_records", {
+  id: int("id").autoincrement().primaryKey(),
+  researchId: varchar("researchId", { length: 32 }).notNull().unique(),
+  queryType: mysqlEnum("queryType", ["OEM", "VIN", "VEHICLE", "OEM_VEHICLE", "BATCH_OEM"]).notNull(),
+  originalQuery: text("originalQuery").notNull(),
+  normalizedQuery: text("normalizedQuery").notNull(),
+  vinRedacted: varchar("vinRedacted", { length: 64 }),
+  status: mysqlEnum("status", ["needs_manual_wpc", "confirmed", "login_required", "session_expired", "blocked", "no_results", "ambiguous"]).default("needs_manual_wpc").notNull(),
+  confidence: mysqlEnum("confidence", ["UNVERIFIED", "WPC_CONFIRMED", "HIGH", "MEDIUM", "LOW"]).default("UNVERIFIED").notNull(),
+  source: varchar("source", { length: 128 }).notNull().default("Hyundai Mobis WPC"),
+  sourceUrl: text("sourceUrl"),
+  resultJson: text("resultJson").notNull(),
+  evidenceJson: text("evidenceJson").notNull().default("[]"),
+  notesJson: text("notesJson").notNull().default("[]"),
+  createdBy: int("createdBy"),
+  retrievedAt: timestamp("retrievedAt").defaultNow().notNull(),
+  verifiedAt: timestamp("verifiedAt"),
+}, (table) => ({
+  queryTypeIdx: index("wpc_query_type_idx").on(table.queryType),
+  statusIdx: index("wpc_status_idx").on(table.status),
+  retrievedAtIdx: index("wpc_retrieved_at_idx").on(table.retrievedAt),
+}));
+
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 export type Product = typeof products.$inferSelect;
@@ -73,3 +96,5 @@ export type InsertProduct = typeof products.$inferInsert;
 export type Inventory = typeof inventory.$inferSelect;
 export type Lead = typeof leads.$inferSelect;
 export type InsertLead = typeof leads.$inferInsert;
+export type WpcResearchRecord = typeof wpcResearchRecords.$inferSelect;
+export type InsertWpcResearchRecord = typeof wpcResearchRecords.$inferInsert;

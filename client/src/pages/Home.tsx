@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { trpc } from "@/lib/trpc";
 import {
   ArrowLeft,
@@ -187,6 +187,32 @@ export default function Home() {
     });
   }, [activeCategory, activeModel, query]);
 
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    let cancelled = false;
+    let cleanup: (() => void) | undefined;
+    const startMotion = () => {
+      import("../lib/homeMotion").then(({ initHomeMotion }) => {
+        if (!cancelled) cleanup = initHomeMotion();
+      });
+    };
+    const idleWindow = window as Window & {
+      requestIdleCallback?: (callback: IdleRequestCallback, options?: IdleRequestOptions) => number;
+      cancelIdleCallback?: (handle: number) => void;
+    };
+    const idleHandle = idleWindow.requestIdleCallback
+      ? idleWindow.requestIdleCallback(startMotion, { timeout: 1200 })
+      : window.setTimeout(startMotion, 350);
+
+    return () => {
+      cancelled = true;
+      if (idleWindow.cancelIdleCallback) idleWindow.cancelIdleCallback(idleHandle);
+      else window.clearTimeout(idleHandle);
+      cleanup?.();
+    };
+  }, [visibleProducts.length]);
+
   const runMatcher = () => {
     const input = matcherText.trim().toLowerCase();
     const found = products.find((product) => input && [product.oem, product.title, product.model].join(" ").toLowerCase().includes(input));
@@ -243,8 +269,11 @@ export default function Home() {
           <div className="hero-grid" />
           <div className="hero-glow hero-glow-one" />
           <div className="hero-glow hero-glow-two" />
+          <div className="hero-orbit hero-orbit-one" aria-hidden="true"><span /></div>
+          <div className="hero-orbit hero-orbit-two" aria-hidden="true"><span /></div>
+          <div className="hero-scanline" aria-hidden="true" />
           <div className="container hero-layout">
-            <div className="hero-copy">
+            <div className="hero-copy" data-reveal>
               <div className="eyebrow"><span className="eyebrow-line" /> قطع غيار كورية أصلية <span className="eyebrow-line" /></div>
               <h1>القطعة الصح،<br /><em>من أول مرة.</em></h1>
               <p className="hero-lead">قطع غيار هيونداي وكيا الأصلية مع تأكيد المطابقة برقم الشاسيه، من قلب الحرفيين إلى باب بيتك.</p>
@@ -258,7 +287,7 @@ export default function Home() {
                 <div><strong>24/7</strong><span>استشارة فنية</span></div>
               </div>
             </div>
-            <div className="hero-search-card glass-card">
+            <div className="hero-search-card glass-card" data-reveal>
               <div className="card-kicker"><Sparkles size={16} /> مساعد البحث السريع</div>
               <h2>بتدور على قطعة؟<br /><span>اكتب رقمها أو وصفها.</span></h2>
               <p>ابحث برقم OEM أو اكتب وصفك بالعامية المصرية وسنساعدك في الوصول للمطابقة الأقرب.</p>
@@ -271,7 +300,7 @@ export default function Home() {
               <div className="confidence-note"><ShieldCheck size={18} /><span>نؤكد المطابقة برقم الشاسيه قبل الشحن</span></div>
             </div>
           </div>
-          <div className="container trust-row">
+          <div className="container trust-row" data-reveal>
             <div><BadgeCheck size={18} /> أصلي 100% من غبور وموبيس</div>
             <div><ShieldCheck size={18} /> ضمان مطابقة الشاسيه</div>
             <div><PackageCheck size={18} /> مخزون مجمع من 6 مخازن</div>
@@ -321,7 +350,7 @@ export default function Home() {
             <div className="section-heading parts-heading"><div><span className="section-label">03 / كتالوج القطع</span><h2>القطعة الأصلية، <span>مضمونة.</span></h2></div><a className="text-link" href={waLink("مرحباً، أريد الاستفسار عن قطعة غير موجودة في الكتالوج") } target="_blank" rel="noreferrer">مش لاقي قطعتك؟ اسألنا <ArrowLeft size={16} /></a></div>
             <div className="filter-toolbar"><div className="filter-scroll"><button className={activeModel === "الكل" ? "filter-chip active" : "filter-chip"} onClick={() => setActiveModel("الكل")}>كل السيارات</button>{cars.map((car) => <button className={activeModel === car.model ? "filter-chip active" : "filter-chip"} key={car.model} onClick={() => setActiveModel(car.model)}>{car.model}</button>)}</div><div className="filter-meta"><SlidersHorizontal size={17} /><span>{visibleProducts.length} منتجات تجريبية</span></div></div>
             <div className="category-row"><span>فلترة حسب نوع القطعة:</span>{categories.map((category) => <button key={category} className={activeCategory === category ? "category-chip active" : "category-chip"} onClick={() => setActiveCategory(category)}>{category}</button>)}</div>
-            <div className="products-grid">{visibleProducts.map((product) => <article className="product-card" key={product.id}><div className="product-image"><img src={product.image} alt={product.title} /><span className="stock-badge"><i /> متوفر</span><button aria-label="إضافة إلى المفضلة"><ShoppingBag size={17} /></button></div><div className="product-body"><div className="product-source"><span>{product.source}</span><span>{product.model}</span></div><h3>{product.title}</h3><div className="oem-line"><span>OEM</span><strong>{product.oem}</strong></div><div className="product-bottom"><div><strong>{product.price}</strong><small>{product.stock}</small></div><a href={waLink(`مرحباً، أريد طلب ${product.title} - رقم OEM ${product.oem}`)} target="_blank" rel="noreferrer" aria-label="اطلب عبر واتساب"><MessageCircle size={19} /></a></div></div></article>)}</div>
+            <div className="products-grid">{visibleProducts.map((product) => <article className="product-card" data-scroll-card key={product.id}><div className="product-image"><img src={product.image} alt={product.title} loading="lazy" width="640" height="420" /><span className="stock-badge"><i /> متوفر</span><button aria-label="إضافة إلى المفضلة"><ShoppingBag size={17} /></button></div><div className="product-body"><div className="product-source"><span>{product.source}</span><span>{product.model}</span></div><h3>{product.title}</h3><div className="oem-line"><span>OEM</span><strong>{product.oem}</strong></div><div className="product-bottom"><div><strong>{product.price}</strong><small>{product.stock}</small></div><a href={waLink(`مرحباً، أريد طلب ${product.title} - رقم OEM ${product.oem}`)} target="_blank" rel="noreferrer" aria-label="اطلب عبر واتساب"><MessageCircle size={19} /></a></div></div></article>)}</div>
             {visibleProducts.length === 0 && <div className="empty-state"><Search size={22} /><strong>مفيش نتيجة بالمواصفات دي لسه.</strong><span>ابعت لنا رقم الشاسيه أو اسأل فريق المبيعات على واتساب.</span><a className="button button-primary" href={waLink("مرحباً، أبحث عن قطعة غير ظاهرة في الكتالوج") } target="_blank" rel="noreferrer">اسأل على واتساب <MessageCircle size={17} /></a></div>}
           </div>
         </section>
